@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publishify - AI 기반 논문 접근성 향상 서비스</title>
+    <style>
+        /* 수정 가능한 주소 및 링크 변수 */
+        :root {
+            --service-url: "https://publishify.condbs.com/";
+            --api-endpoint: "https://publishify.condbs.com/api";
+            --contact-email: "mill@dankook.ac.kr";
+            --documentation-url: "https://publishify.condbs.com/docs";
+            --github-url: "https://github.com/dankook-remodeling/publishify";
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* 다크 모드 스타일 */
+        body.dark-mode {
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode header {
+            background: rgba(15, 15, 15, 0.95);
+            box-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        body.dark-mode .nav-links a {
+            color: #e0e0e0;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #667eea;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 히어로 섹션 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+            padding: 0 2rem;
+            max-width: 900px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.4s;
+            animation-fill-mode: both;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* 기능 섹션 */
+        .features {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        body.dark-mode .section-title {
+            color: #e0e0e0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .feature-card {
+            background: #1a1a1a;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        body.dark-mode .feature-card h3 {
+            color: #e0e0e0;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        body.dark-mode .feature-card p {
+            color: #aaa;
+        }
+
+        /* 프로세스 섹션 */
+        .process {
+            padding: 5rem 5%;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .process {
+            background: #111;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: calc(50% + 40px);
+            width: calc(100% - 80px);
+            height: 2px;
+            background: #ddd;
+            z-index: 0;
+        }
+
+        body.dark-mode .step:not(:last-child)::after {
+            background: #444;
+        }
+
+        /* 기대 효과 섹션 */
+        .benefits {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .benefits-list {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: start;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .benefit-item {
+            background: #1a1a1a;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.05);
+        }
+
+        .benefit-item:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .benefit-icon {
+            min-width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* CTA 섹션 */
+        .cta-section {
+            padding: 5rem 5%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            text-align: center;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        /* 푸터 */
+        footer {
+            padding: 3rem 5%;
+            background: #1a1a1a;
+            color: #aaa;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #667eea;
+        }
+
+        .organization-info {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #444;
+        }
+
+        .organization-info h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .step:not(:last-child)::after {
+                display: none;
+            }
+
+            .benefit-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .benefit-item:hover {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header>
+        <nav>
+            <div class="logo">Publishify</div>
+            <ul class="nav-links">
+                <li><a href="#home">홈</a></li>
+                <li><a href="#features">주요 기능</a></li>
+                <li><a href="#process">작동 방식</a></li>
+                <li><a href="#benefits">기대 효과</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()">🌙 다크모드</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>PDF 논문을 아름다운 웹페이지로</h1>
+            <p>AI가 PDF 논문을 분석하고, 누구나 쉽게 이해할 수 있는 인터랙티브 웹페이지로 변환합니다</p>
+            <div class="cta-buttons">
+                <a href="https://publishify.condbs.com/" class="btn btn-primary">서비스 시작하기</a>
+                <a href="#features" class="btn btn-secondary">자세히 알아보기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 주요 기능 섹션 -->
+    <section class="features" id="features">
+        <h2 class="section-title">혁신적인 핵심 기능</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3>PDF 업로드 & AI 분석</h3>
+                <p>PDF 파일을 업로드하면 Google Gemini 등 최신 AI가 논문의 핵심 내용을 자동으로 추출하고 구조화합니다. 복잡한 학술 논문도 즉시 분석됩니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>동적 웹사이트 생성</h3>
+                <p>분석된 내용을 바탕으로 시각적으로 아름답고 반응형인 웹사이트를 실시간으로 생성합니다. 각 논문의 특성에 맞춘 최적화된 디자인을 제공합니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💾</div>
+                <h3>HTML 저장 및 공유</h3>
+                <p>생성된 웹사이트를 단일 HTML 파일로 저장하고, 고유 URL로 언제 어디서나 접근 가능합니다. 연구 결과를 효과적으로 홍보할 수 있습니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>다중 플랫폼 지원</h3>
+                <p>데스크톱, 태블릿, 모바일 등 모든 디바이스에서 최적의 가독성을 제공하며, 다크 모드를 포함한 다양한 테마를 지원합니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>안전한 데이터 처리</h3>
+                <p>업로드된 PDF 파일과 생성된 데이터를 안전하게 관리하고, 사용자 개인정보를 보호하는 강력한 보안 시스템을 제공합니다.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>시각적 데이터 표현</h3>
+                <p>복잡한 연구 데이터를 인터랙티브한 차트, 그래프, 개념 맵 등으로 변환하여 직관적인 이해를 돕습니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 프로세스 섹션 -->
+    <section class="process" id="process">
+        <h2 class="section-title">간단한 4단계 프로세스</h2>
+        <div class="process-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>PDF 업로드</h3>
+                <p>논문 PDF 파일을 드래그 앤 드롭으로 간편하게 업로드합니다</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>AI 분석</h3>
+                <p>강력한 AI가 PDF를 읽고 핵심 내용을 자동으로 추출합니다</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>웹사이트 생성</h3>
+                <p>분석된 내용을 바탕으로 아름다운 웹페이지를 자동 생성합니다</p>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <h3>저장 및 공유</h3>
+                <p>생성된 페이지를 저장하고 URL로 어디서나 공유할 수 있습니다</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 기대 효과 섹션 -->
+    <section class="benefits" id="benefits">
+        <h2 class="section-title">혁신적인 변화를 경험하세요</h2>
+        <div class="benefits-list">
+            <div class="benefit-item">
+                <div class="benefit-icon">⚡</div>
+                <div>
+                    <h3>학술 연구의 효율성 증대</h3>
+                    <p>연구자들이 PDF 형태의 논문을 빠르고 정확하게 파악하여 연구 시간을 획기적으로 단축할 수 있습니다.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">💡</div>
+                <div>
+                    <h3>새로운 지식 발견 촉진</h3>
+                    <p>AI가 PDF에서 추출한 구조화된 데이터를 분석하여 숨겨진 연구 동향과 지식 간의 연결고리를 발견합니다.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🤝</div>
+                <div>
+                    <h3>학문 융합 연구 활성화</h3>
+                    <p>다양한 분야의 연구자들이 서로의 연구를 쉽게 이해하고 협업할 수 있는 환경을 제공합니다.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🌍</div>
+                <div>
+                    <h3>과학 기술 대중화</h3>
+                    <p>복잡한 PDF 논문을 일반 대중도 쉽게 이해할 수 있는 웹페이지로 변환하여 제공합니다.</p>
+                </div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">🔓</div>
+                <div>
+                    <h3>오픈 사이언스 실현</h3>
+                    <p>PDF 논문의 접근성을 높여 지식 공유 생태계를 강화하고 오픈 사이언스 운동에 기여합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA 섹션 -->
+    <section class="cta-section">
+        <h2>지금 바로 시작하세요</h2>
+        <p>AI와 함께 학술 정보의 새로운 미래를 만들어갑니다</p>
+        <div class="cta-buttons">
+            <a href="https://publishify.condbs.com/" class="btn btn-primary">무료로 시작하기</a>
+            <a href="https://publishify.condbs.com/docs" class="btn btn-secondary">사용 가이드 보기</a>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#" onclick="showAbout()">연구소 소개</a>
+                <a href="#" onclick="showPrivacy()">개인정보처리방침</a>
+                <a href="#" onclick="showTerms()">이용약관</a>
+                <a href="mailto:mill@dankook.ac.kr">문의하기</a>
+            </div>
+            <div class="organization-info">
+                <h4>단국대학교 리모델링연구소</h4>
+                <p>개발자: 허석재</p>
+                <p>이메일: mill@dankook.ac.kr</p>
+            </div>
+            <p style="margin-top: 1rem;">&copy; 2024 Publishify. 단국대학교 리모델링연구소. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 테마 토글 기능
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️ 라이트모드';
+            } else {
+                btn.textContent = '🌙 다크모드';
+            }
+        }
+
+        // 스크롤 애니메이션
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = document.body.classList.contains('dark-mode') 
+                    ? 'rgba(10, 10, 10, 0.98)' 
+                    : 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = document.body.classList.contains('dark-mode')
+                    ? 'rgba(15, 15, 15, 0.95)'
+                    : 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 링크 함수들 - Publishify 서비스로 수정
+        function showAbout() {
+            // 단국대학교 리모델링연구소 페이지
+            window.open('https://www.dankook.ac.kr', '_blank');
+        }
+
+        function showPrivacy() {
+            // 개인정보처리방침 페이지
+            window.open('https://publishify.condbs.com/privacy', '_blank');
+        }
+
+        function showTerms() {
+            // 이용약관 페이지
+            window.open('https://publishify.condbs.com/terms', '_blank');
+        }
+    </script>
+</body>
+</html>
