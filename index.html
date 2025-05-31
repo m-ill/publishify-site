@@ -819,6 +819,32 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        .example-url {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+        }
+
+        .example-url:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        body.dark-mode .example-url {
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        body.dark-mode .example-url:hover {
+            background: rgba(99, 102, 241, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -994,6 +1020,10 @@
                 <div class="process-content">
                     <h3 data-key="process3-title">3단계: 고유 URL 생성 및 배포</h3>
                     <p data-key="process3-desc">각 논문마다 고유한 웹 주소를 생성하고, 학회 및 출판사 도메인에 자동으로 배포됩니다.</p>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://paper.condbs.com/Publishify-ko-10.1186_s40069-018-0316-x.html" class="example-url" data-key="process3-url-ko" style="display: none;">예시: https://paper.condbs.com/Publishify-ko-10.1186_s40069-018-0316-x.html</a>
+                        <a href="https://paper.condbs.com/Publishify-en-10.1186_s40069-018-0316-x.html" class="example-url" data-key="process3-url-other" style="display: none;">Example: https://paper.condbs.com/Publishify-en-10.1186_s40069-018-0316-x.html</a>
+                    </p>
                 </div>
                 <div class="process-number">3</div>
             </div>
@@ -1332,7 +1362,7 @@
                 'footer-terms': '使用条款',
                 'footer-contact': '联系我们',
                 'footer-org': '檀国大学改造研究所',
-                'footer-dev': '开发者：Heo,Seokjae',
+                'footer-dev': '开发者：许锡在',
                 'footer-email': '联系：mill@dankook.ac.kr',
                 'footer-copyright': '© 2025 Publishify. 檀国大学改造研究所. 版权所有.',
                 
@@ -1405,7 +1435,7 @@
                 'footer-terms': '利用規約',
                 'footer-contact': 'お問い合わせ',
                 'footer-org': '檀国大学リモデリング研究所',
-                'footer-dev': '開発：Heo,Seokjae',
+                'footer-dev': '開発：許錫在',
                 'footer-email': 'お問い合わせ：mill@dankook.ac.kr',
                 'footer-copyright': '© 2025 Publishify. 檀国大学リモデリング研究所. All rights reserved.',
                 
@@ -1437,6 +1467,18 @@
             updatePageContent();
             updateLanguageButton();
             toggleLanguageDropdown();
+            
+            // URL 표시 업데이트
+            const koUrl = document.querySelector('[data-key="process3-url-ko"]');
+            const otherUrl = document.querySelector('[data-key="process3-url-other"]');
+            
+            if (lang === 'ko') {
+                koUrl.style.display = 'block';
+                otherUrl.style.display = 'none';
+            } else {
+                koUrl.style.display = 'none';
+                otherUrl.style.display = 'block';
+            }
             
             // 로컬 스토리지에 저장
             localStorage.setItem('preferred-language', lang);
@@ -1480,6 +1522,18 @@
                 currentLanguage = savedLanguage;
                 updatePageContent();
                 updateLanguageButton();
+                
+                // 초기 URL 표시 설정
+                const koUrl = document.querySelector('[data-key="process3-url-ko"]');
+                const otherUrl = document.querySelector('[data-key="process3-url-other"]');
+                
+                if (currentLanguage === 'ko') {
+                    koUrl.style.display = 'block';
+                    otherUrl.style.display = 'none';
+                } else {
+                    koUrl.style.display = 'none';
+                    otherUrl.style.display = 'block';
+                }
             }
         });
     </script>
