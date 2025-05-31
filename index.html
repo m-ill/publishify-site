@@ -121,6 +121,94 @@
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
         }
 
+        /* 언어 선택기 스타일 */
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .language-button {
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .language-button:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            min-width: 120px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .language-dropdown {
+            background: #2d2d44;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .language-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-option {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .language-option:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        body.dark-mode .language-option:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .language-option:first-child {
+            border-radius: 10px 10px 0 0;
+        }
+
+        .language-option:last-child {
+            border-radius: 0 0 10px 10px;
+        }
+
+        .flag-icon {
+            font-size: 1rem;
+        }
+
         /* 히어로 섹션 - 프리미엄 디자인 */
         .hero {
             min-height: 100vh;
@@ -738,7 +826,7 @@
     <div id="guideModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
-            <h2 style="text-align: center; margin-bottom: 20px;">Publishify 사용 가이드</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;" data-key="modal-title">Publishify 사용 가이드</h2>
             <div class="guide-images">
                 <img src="docs/guide1.png" alt="가이드 1">
                 <img src="docs/guide2.png" alt="가이드 2">
@@ -751,11 +839,38 @@
         <nav>
             <div class="logo">Publishify</div>
             <ul class="nav-links">
-                <li><a href="#home">홈</a></li>
-                <li><a href="#problem">문제인식</a></li>
-                <li><a href="#solution">솔루션</a></li>
-                <li><a href="#how-it-works">작동방식</a></li>
-                <li><a href="mailto:mill@dankook.ac.kr" class="contact-btn">문의하기</a></li>
+                <li><a href="#home" data-key="nav-home">홈</a></li>
+                <li><a href="#problem" data-key="nav-problem">문제인식</a></li>
+                <li><a href="#solution" data-key="nav-solution">솔루션</a></li>
+                <li><a href="#how-it-works" data-key="nav-how-it-works">작동방식</a></li>
+                <li>
+                    <div class="language-selector">
+                        <button class="language-button" onclick="toggleLanguageDropdown()">
+                            <span class="flag-icon">🇰🇷</span>
+                            <span data-key="current-lang">한국어</span>
+                            <span>▼</span>
+                        </button>
+                        <div class="language-dropdown" id="languageDropdown">
+                            <div class="language-option" onclick="changeLanguage('ko')">
+                                <span class="flag-icon">🇰🇷</span>
+                                <span>한국어</span>
+                            </div>
+                            <div class="language-option" onclick="changeLanguage('en')">
+                                <span class="flag-icon">🇺🇸</span>
+                                <span>English</span>
+                            </div>
+                            <div class="language-option" onclick="changeLanguage('zh')">
+                                <span class="flag-icon">🇨🇳</span>
+                                <span>中文</span>
+                            </div>
+                            <div class="language-option" onclick="changeLanguage('ja')">
+                                <span class="flag-icon">🇯🇵</span>
+                                <span>日本語</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="mailto:mill@dankook.ac.kr" class="contact-btn" data-key="nav-contact">문의하기</a></li>
             </ul>
         </nav>
     </header>
@@ -764,12 +879,12 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>AI 검색 시대,<br>학술 출판의 새로운 표준</h1>
-                <p class="subtitle">학술 논문의 가치를 AI가 이해하고 검색할 수 있도록</p>
-                <p>Publishify는 PDF 논문을 AI가 완벽하게 이해하고 검색할 수 있는 웹 콘텐츠로 변환합니다. 구독형 저널의 접근성을 유지하면서도 AI 시대에 맞는 새로운 학술 출판 표준을 제시합니다.</p>
+                <h1 data-key="hero-title">AI 검색 시대,<br>학술 출판의 새로운 표준</h1>
+                <p class="subtitle" data-key="hero-subtitle">학술 논문의 가치를 AI가 이해하고 검색할 수 있도록</p>
+                <p data-key="hero-description">Publishify는 PDF 논문을 AI가 완벽하게 이해하고 검색할 수 있는 웹 콘텐츠로 변환합니다. 구독형 저널의 접근성을 유지하면서도 AI 시대에 맞는 새로운 학술 출판 표준을 제시합니다.</p>
                 <div class="hero-cta">
-                    <a href="https://publishify.condbs.com/" class="btn-try">바로 사용해보기</a>
-                    <a href="#solution" class="btn-learn">자세히 알아보기</a>
+                    <a href="https://publishify.condbs.com/" class="btn-try" data-key="hero-try-btn">바로 사용해보기</a>
+                    <a href="#solution" class="btn-learn" data-key="hero-learn-btn">자세히 알아보기</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -781,39 +896,39 @@
     <!-- 문제 인식 섹션 -->
     <section class="problem-section" id="problem">
         <div class="section-header">
-            <h2>AI 시대, 학술 출판이 직면한 도전</h2>
-            <p>OpenAI, Google, Anthropic 등 거대 AI 기업들이 학술 콘텐츠를 검색하고 활용하는 시대가 도래했습니다</p>
+            <h2 data-key="problem-title">AI 시대, 학술 출판이 직면한 도전</h2>
+            <p data-key="problem-subtitle">OpenAI, Google, Anthropic 등 거대 AI 기업들이 학술 콘텐츠를 검색하고 활용하는 시대가 도래했습니다</p>
         </div>
         <div class="problem-cards">
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">🔒</div>
-                <h3>구독형 저널의 AI 검색 제한</h3>
-                <p>Open Access가 아닌 구독형 저널은 AI가 내용을 이해하고 검색할 수 없어, 학술적 가치가 AI 생태계에서 소외되고 있습니다.</p>
+                <h3 data-key="problem1-title">구독형 저널의 AI 검색 제한</h3>
+                <p data-key="problem1-desc">Open Access가 아닌 구독형 저널은 AI가 내용을 이해하고 검색할 수 없어, 학술적 가치가 AI 생태계에서 소외되고 있습니다.</p>
             </div>
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">📄</div>
-                <h3>PDF 형식의 AI 활용 한계</h3>
-                <p>AI는 PDF 문서의 구조와 맥락을 완벽하게 이해하기 어려워, 학술 논문의 핵심 가치가 제대로 전달되지 않습니다.</p>
+                <h3 data-key="problem2-title">PDF 형식의 AI 활용 한계</h3>
+                <p data-key="problem2-desc">AI는 PDF 문서의 구조와 맥락을 완벽하게 이해하기 어려워, 학술 논문의 핵심 가치가 제대로 전달되지 않습니다.</p>
             </div>
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">⚖️</div>
-                <h3>저작권 보호와 AI 활용의 딜레마</h3>
-                <p>저작권을 보호하면서도 AI가 학술 콘텐츠를 이해하고 인용할 수 있는 새로운 표준이 필요합니다.</p>
+                <h3 data-key="problem3-title">저작권 보호와 AI 활용의 딜레마</h3>
+                <p data-key="problem3-desc">저작권을 보호하면서도 AI가 학술 콘텐츠를 이해하고 인용할 수 있는 새로운 표준이 필요합니다.</p>
             </div>
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">🌐</div>
-                <h3>학술 영향력의 디지털 격차</h3>
-                <p>AI 검색에 최적화되지 않은 논문은 향후 학술 생태계에서 영향력을 잃을 위험에 직면해 있습니다.</p>
+                <h3 data-key="problem4-title">학술 영향력의 디지털 격차</h3>
+                <p data-key="problem4-desc">AI 검색에 최적화되지 않은 논문은 향후 학술 생태계에서 영향력을 잃을 위험에 직면해 있습니다.</p>
             </div>
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">⏳</div>
-                <h3>연구 정보 접근성의 시간 지연</h3>
-                <p>논문 출판 후 최신 연구 결과가 AI와 연구자에게 실시간으로 전달되지 않아, 혁신의 속도가 늦어지고 있습니다.</p>
+                <h3 data-key="problem5-title">연구 정보 접근성의 시간 지연</h3>
+                <p data-key="problem5-desc">논문 출판 후 최신 연구 결과가 AI와 연구자에게 실시간으로 전달되지 않아, 혁신의 속도가 늦어지고 있습니다.</p>
             </div>
             <div class="problem-card animate-on-scroll">
                 <div class="problem-icon">💬</div>
-                <h3>다국어·비전문가 접근성 부족</h3>
-                <p>AI가 논문을 다양한 언어와 수준으로 해석·요약하지 못해, 글로벌 연구자와 일반 대중의 지식 접근성이 크게 제한되고 있습니다.</p>
+                <h3 data-key="problem6-title">다국어·비전문가 접근성 부족</h3>
+                <p data-key="problem6-desc">AI가 논문을 다양한 언어와 수준으로 해석·요약하지 못해, 글로벌 연구자와 일반 대중의 지식 접근성이 크게 제한되고 있습니다.</p>
             </div>
         </div>
     </section>
@@ -821,8 +936,8 @@
     <!-- 솔루션 섹션 -->
     <section class="solution-section" id="solution">
         <div class="section-header">
-            <h2>Publishify, AI 시대의 학술 출판 혁신</h2>
-            <p>DOI를 넘어서는 AI 검색 표준 - 모든 학술 논문에 AI가 이해할 수 있는 고유한 웹 주소를 부여합니다</p>
+            <h2 data-key="solution-title">Publishify, AI 시대의 학술 출판 혁신</h2>
+            <p data-key="solution-subtitle">DOI를 넘어서는 AI 검색 표준 - 모든 학술 논문에 AI가 이해할 수 있는 고유한 웹 주소를 부여합니다</p>
         </div>
         <div class="solution-grid">
             <div class="solution-visual animate-on-scroll">
@@ -832,22 +947,22 @@
                 <div class="solution-point animate-on-scroll">
                     <div class="solution-icon">🤖</div>
                     <div>
-                        <h3>AI 최적화 웹 포맷</h3>
-                        <p>PDF를 AI가 완벽하게 이해할 수 있는 구조화된 웹 콘텐츠로 변환하여, 학술 논문의 가시성을 극대화합니다.</p>
+                        <h3 data-key="solution1-title">AI 최적화 웹 포맷</h3>
+                        <p data-key="solution1-desc">PDF를 AI가 완벽하게 이해할 수 있는 구조화된 웹 콘텐츠로 변환하여, 학술 논문의 가시성을 극대화합니다.</p>
                     </div>
                 </div>
                 <div class="solution-point animate-on-scroll">
                     <div class="solution-icon">🔐</div>
                     <div>
-                        <h3>저작권 보호 솔루션</h3>
-                        <p>전체 내용이 아닌 AI가 이해할 수 있는 구조화된 요약본만 제공하여, 저작권을 보호하면서도 AI 검색을 가능하게 합니다.</p>
+                        <h3 data-key="solution2-title">저작권 보호 솔루션</h3>
+                        <p data-key="solution2-desc">전체 내용이 아닌 AI가 이해할 수 있는 구조화된 요약본만 제공하여, 저작권을 보호하면서도 AI 검색을 가능하게 합니다.</p>
                     </div>
                 </div>
                 <div class="solution-point animate-on-scroll">
                     <div class="solution-icon">🌐</div>
                     <div>
-                        <h3>고유 AI 검색 URL</h3>
-                        <p>각 논문마다 고유한 웹 주소를 생성하여, AI가 직접 접근하고 인용할 수 있는 새로운 학술 출판 표준을 제시합니다.</p>
+                        <h3 data-key="solution3-title">고유 AI 검색 URL</h3>
+                        <p data-key="solution3-desc">각 논문마다 고유한 웹 주소를 생성하여, AI가 직접 접근하고 인용할 수 있는 새로운 학술 출판 표준을 제시합니다.</p>
                     </div>
                 </div>
             </div>
@@ -857,35 +972,35 @@
     <!-- 작동 방식 섹션 -->
     <section class="how-it-works" id="how-it-works">
         <div class="section-header">
-            <h2>간단하고 강력한 통합 프로세스</h2>
-            <p>기존 출판 워크플로우에 완벽하게 통합되는 솔루션</p>
+            <h2 data-key="how-it-works-title">간단하고 강력한 통합 프로세스</h2>
+            <p data-key="how-it-works-subtitle">기존 출판 워크플로우에 완벽하게 통합되는 솔루션</p>
         </div>
         <div class="process-timeline">
             <div class="process-step animate-on-scroll">
                 <div class="process-content">
-                    <h3>1단계: 논문 제출 시 자동 생성</h3>
-                    <p>저자가 논문을 제출할 때 Publishify를 통해 AI 요약본을 자동 생성합니다. 저자가 직접 생성하므로 저작권 문제가 해결됩니다.</p>
+                    <h3 data-key="process1-title">1단계: 논문 제출 시 자동 생성</h3>
+                    <p data-key="process1-desc">저자가 논문을 제출할 때 Publishify를 통해 AI 요약본을 자동 생성합니다. 저자가 직접 생성하므로 저작권 문제가 해결됩니다.</p>
                 </div>
                 <div class="process-number">1</div>
             </div>
             <div class="process-step animate-on-scroll">
                 <div class="process-content">
-                    <h3>2단계: AI 분석 및 구조화</h3>
-                    <p>Google Gemini 등 최신 AI가 논문을 분석하여 핵심 내용을 구조화하고, AI가 이해할 수 있는 형식으로 변환합니다.</p>
+                    <h3 data-key="process2-title">2단계: AI 분석 및 구조화</h3>
+                    <p data-key="process2-desc">Google Gemini 등 최신 AI가 논문을 분석하여 핵심 내용을 구조화하고, AI가 이해할 수 있는 형식으로 변환합니다.</p>
                 </div>
                 <div class="process-number">2</div>
             </div>
             <div class="process-step animate-on-scroll">
                 <div class="process-content">
-                    <h3>3단계: 고유 URL 생성 및 배포</h3>
-                    <p>각 논문마다 고유한 웹 주소를 생성하고, 학회 및 출판사 도메인에 자동으로 배포됩니다.</p>
+                    <h3 data-key="process3-title">3단계: 고유 URL 생성 및 배포</h3>
+                    <p data-key="process3-desc">각 논문마다 고유한 웹 주소를 생성하고, 학회 및 출판사 도메인에 자동으로 배포됩니다.</p>
                 </div>
                 <div class="process-number">3</div>
             </div>
             <div class="process-step animate-on-scroll">
                 <div class="process-content">
-                    <h3>4단계: AI 검색 및 인용</h3>
-                    <p>전 세계 AI 시스템이 논문을 검색하고 인용할 수 있게 되어, 학술 논문의 영향력이 극대화됩니다.</p>
+                    <h3 data-key="process4-title">4단계: AI 검색 및 인용</h3>
+                    <p data-key="process4-desc">전 세계 AI 시스템이 논문을 검색하고 인용할 수 있게 되어, 학술 논문의 영향력이 극대화됩니다.</p>
                 </div>
                 <div class="process-number">4</div>
             </div>
@@ -895,11 +1010,11 @@
     <!-- CTA 섹션 -->
     <section class="cta-section">
         <div class="cta-content">
-            <h2>AI 시대, 학술 출판의 미래를 선도하세요</h2>
-            <p>이미 선도적인 학회들이 Publishify와 함께 AI 검색 시대를 준비하고 있습니다</p>
+            <h2 data-key="cta-title">AI 시대, 학술 출판의 미래를 선도하세요</h2>
+            <p data-key="cta-desc">이미 선도적인 학회들이 Publishify와 함께 AI 검색 시대를 준비하고 있습니다</p>
             <div class="cta-buttons">
-                <a href="https://publishify.condbs.com/" class="btn-white">지금 시작하기</a>
-                <a href="#" class="btn-outline-white" onclick="showModal(); return false;">사용법 보기</a>
+                <a href="https://publishify.condbs.com/" class="btn-white" data-key="cta-start-btn">지금 시작하기</a>
+                <a href="#" class="btn-outline-white" onclick="showModal(); return false;" data-key="cta-guide-btn">사용법 보기</a>
             </div>
         </div>
     </section>
@@ -908,17 +1023,17 @@
     <footer>
         <div class="footer-content">
             <div class="footer-links">
-                <a href="#" onclick="showAbout()">연구소 소개</a>
-                <a href="#" onclick="showPrivacy()">개인정보처리방침</a>
-                <a href="#" onclick="showTerms()">이용약관</a>
-                <a href="mailto:mill@dankook.ac.kr">문의하기</a>
+                <a href="#" onclick="showAbout()" data-key="footer-about">연구소 소개</a>
+                <a href="#" onclick="showPrivacy()" data-key="footer-privacy">개인정보처리방침</a>
+                <a href="#" onclick="showTerms()" data-key="footer-terms">이용약관</a>
+                <a href="mailto:mill@dankook.ac.kr" data-key="footer-contact">문의하기</a>
             </div>
             <div class="organization-info">
-                <h4>단국대학교 리모델링연구소</h4>
-                <p>개발: 허석재</p>
-                <p>문의: mill@dankook.ac.kr</p>
+                <h4 data-key="footer-org">단국대학교 리모델링연구소</h4>
+                <p data-key="footer-dev">개발: 허석재</p>
+                <p data-key="footer-email">문의: mill@dankook.ac.kr</p>
             </div>
-            <p style="margin-top: 1rem;">&copy; 2025 Publishify. 단국대학교 리모델링연구소. All rights reserved.</p>
+            <p style="margin-top: 1rem;" data-key="footer-copyright">&copy; 2025 Publishify. 단국대학교 리모델링연구소. All rights reserved.</p>
         </div>
     </footer>
 
@@ -1002,6 +1117,371 @@
         function showTerms() {
             window.open('https://publishify.condbs.com/terms', '_blank');
         }
+
+        // 다국어 번역 데이터
+        const translations = {
+            ko: {
+                // 네비게이션
+                'current-lang': '한국어',
+                'nav-home': '홈',
+                'nav-problem': '문제인식',
+                'nav-solution': '솔루션',
+                'nav-how-it-works': '작동방식',
+                'nav-contact': '문의하기',
+                
+                // 히어로 섹션
+                'hero-title': 'AI 검색 시대,<br>학술 출판의 새로운 표준',
+                'hero-subtitle': '학술 논문의 가치를 AI가 이해하고 검색할 수 있도록',
+                'hero-description': 'Publishify는 PDF 논문을 AI가 완벽하게 이해하고 검색할 수 있는 웹 콘텐츠로 변환합니다. 구독형 저널의 접근성을 유지하면서도 AI 시대에 맞는 새로운 학술 출판 표준을 제시합니다.',
+                'hero-try-btn': '바로 사용해보기',
+                'hero-learn-btn': '자세히 알아보기',
+                
+                // 문제 섹션
+                'problem-title': 'AI 시대, 학술 출판이 직면한 도전',
+                'problem-subtitle': 'OpenAI, Google, Anthropic 등 거대 AI 기업들이 학술 콘텐츠를 검색하고 활용하는 시대가 도래했습니다',
+                'problem1-title': '구독형 저널의 AI 검색 제한',
+                'problem1-desc': 'Open Access가 아닌 구독형 저널은 AI가 내용을 이해하고 검색할 수 없어, 학술적 가치가 AI 생태계에서 소외되고 있습니다.',
+                'problem2-title': 'PDF 형식의 AI 활용 한계',
+                'problem2-desc': 'AI는 PDF 문서의 구조와 맥락을 완벽하게 이해하기 어려워, 학술 논문의 핵심 가치가 제대로 전달되지 않습니다.',
+                'problem3-title': '저작권 보호와 AI 활용의 딜레마',
+                'problem3-desc': '저작권을 보호하면서도 AI가 학술 콘텐츠를 이해하고 인용할 수 있는 새로운 표준이 필요합니다.',
+                'problem4-title': '학술 영향력의 디지털 격차',
+                'problem4-desc': 'AI 검색에 최적화되지 않은 논문은 향후 학술 생태계에서 영향력을 잃을 위험에 직면해 있습니다.',
+                'problem5-title': '연구 정보 접근성의 시간 지연',
+                'problem5-desc': '논문 출판 후 최신 연구 결과가 AI와 연구자에게 실시간으로 전달되지 않아, 혁신의 속도가 늦어지고 있습니다.',
+                'problem6-title': '다국어·비전문가 접근성 부족',
+                'problem6-desc': 'AI가 논문을 다양한 언어와 수준으로 해석·요약하지 못해, 글로벌 연구자와 일반 대중의 지식 접근성이 크게 제한되고 있습니다.',
+                
+                // 솔루션 섹션
+                'solution-title': 'Publishify, AI 시대의 학술 출판 혁신',
+                'solution-subtitle': 'DOI를 넘어서는 AI 검색 표준 - 모든 학술 논문에 AI가 이해할 수 있는 고유한 웹 주소를 부여합니다',
+                'solution1-title': 'AI 최적화 웹 포맷',
+                'solution1-desc': 'PDF를 AI가 완벽하게 이해할 수 있는 구조화된 웹 콘텐츠로 변환하여, 학술 논문의 가시성을 극대화합니다.',
+                'solution2-title': '저작권 보호 솔루션',
+                'solution2-desc': '전체 내용이 아닌 AI가 이해할 수 있는 구조화된 요약본만 제공하여, 저작권을 보호하면서도 AI 검색을 가능하게 합니다.',
+                'solution3-title': '고유 AI 검색 URL',
+                'solution3-desc': '각 논문마다 고유한 웹 주소를 생성하여, AI가 직접 접근하고 인용할 수 있는 새로운 학술 출판 표준을 제시합니다.',
+                
+                // 작동방식 섹션
+                'how-it-works-title': '간단하고 강력한 통합 프로세스',
+                'how-it-works-subtitle': '기존 출판 워크플로우에 완벽하게 통합되는 솔루션',
+                'process1-title': '1단계: 논문 제출 시 자동 생성',
+                'process1-desc': '저자가 논문을 제출할 때 Publishify를 통해 AI 요약본을 자동 생성합니다. 저자가 직접 생성하므로 저작권 문제가 해결됩니다.',
+                'process2-title': '2단계: AI 분석 및 구조화',
+                'process2-desc': 'Google Gemini 등 최신 AI가 논문을 분석하여 핵심 내용을 구조화하고, AI가 이해할 수 있는 형식으로 변환합니다.',
+                'process3-title': '3단계: 고유 URL 생성 및 배포',
+                'process3-desc': '각 논문마다 고유한 웹 주소를 생성하고, 학회 및 출판사 도메인에 자동으로 배포됩니다.',
+                'process4-title': '4단계: AI 검색 및 인용',
+                'process4-desc': '전 세계 AI 시스템이 논문을 검색하고 인용할 수 있게 되어, 학술 논문의 영향력이 극대화됩니다.',
+                
+                // CTA 섹션
+                'cta-title': 'AI 시대, 학술 출판의 미래를 선도하세요',
+                'cta-desc': '이미 선도적인 학회들이 Publishify와 함께 AI 검색 시대를 준비하고 있습니다',
+                'cta-start-btn': '지금 시작하기',
+                'cta-guide-btn': '사용법 보기',
+                
+                // 푸터
+                'footer-about': '연구소 소개',
+                'footer-privacy': '개인정보처리방침',
+                'footer-terms': '이용약관',
+                'footer-contact': '문의하기',
+                'footer-org': '단국대학교 리모델링연구소',
+                'footer-dev': '개발: 허석재',
+                'footer-email': '문의: mill@dankook.ac.kr',
+                'footer-copyright': '© 2025 Publishify. 단국대학교 리모델링연구소. All rights reserved.',
+                
+                // 모달
+                'modal-title': 'Publishify 사용 가이드'
+            },
+            en: {
+                // Navigation
+                'current-lang': 'English',
+                'nav-home': 'Home',
+                'nav-problem': 'Problem',
+                'nav-solution': 'Solution',
+                'nav-how-it-works': 'How It Works',
+                'nav-contact': 'Contact',
+                
+                // Hero Section
+                'hero-title': 'The New Standard for<br>Academic Publishing in AI Era',
+                'hero-subtitle': 'Making academic papers understandable and searchable by AI',
+                'hero-description': 'Publishify converts PDF papers into web content that AI can perfectly understand and search. It presents a new academic publishing standard for the AI era while maintaining the accessibility of subscription journals.',
+                'hero-try-btn': 'Try Now',
+                'hero-learn-btn': 'Learn More',
+                
+                // Problem Section
+                'problem-title': 'Challenges in Academic Publishing in the AI Era',
+                'problem-subtitle': 'The era when major AI companies like OpenAI, Google, and Anthropic search and utilize academic content has arrived',
+                'problem1-title': 'AI Search Limitations in Subscription Journals',
+                'problem1-desc': 'Non-Open Access subscription journals cannot be understood and searched by AI, causing academic value to be excluded from the AI ecosystem.',
+                'problem2-title': 'AI Utilization Limitations of PDF Format',
+                'problem2-desc': 'AI has difficulty perfectly understanding the structure and context of PDF documents, preventing proper transmission of core academic paper values.',
+                'problem3-title': 'Copyright Protection vs AI Utilization Dilemma',
+                'problem3-desc': 'A new standard is needed that allows AI to understand and cite academic content while protecting copyright.',
+                'problem4-title': 'Digital Divide in Academic Influence',
+                'problem4-desc': 'Papers not optimized for AI search face the risk of losing influence in future academic ecosystems.',
+                'problem5-title': 'Time Delay in Research Information Access',
+                'problem5-desc': 'Latest research results are not delivered to AI and researchers in real-time after paper publication, slowing innovation speed.',
+                'problem6-title': 'Lack of Multilingual and Non-Expert Accessibility',
+                'problem6-desc': 'AI cannot interpret and summarize papers in various languages and levels, greatly limiting knowledge accessibility for global researchers and the general public.',
+                
+                // Solution Section
+                'solution-title': 'Publishify: Academic Publishing Innovation for the AI Era',
+                'solution-subtitle': 'AI Search Standard Beyond DOI - Providing unique web addresses that AI can understand for all academic papers',
+                'solution1-title': 'AI-Optimized Web Format',
+                'solution1-desc': 'Converts PDFs into structured web content that AI can perfectly understand, maximizing academic paper visibility.',
+                'solution2-title': 'Copyright Protection Solution',
+                'solution2-desc': 'Provides only AI-understandable structured summaries rather than full content, protecting copyright while enabling AI search.',
+                'solution3-title': 'Unique AI Search URL',
+                'solution3-desc': 'Creates unique web addresses for each paper, presenting a new academic publishing standard that AI can directly access and cite.',
+                
+                // How It Works Section
+                'how-it-works-title': 'Simple and Powerful Integration Process',
+                'how-it-works-subtitle': 'Solution that integrates perfectly with existing publishing workflows',
+                'process1-title': 'Step 1: Automatic Generation on Paper Submission',
+                'process1-desc': 'When authors submit papers, AI summaries are automatically generated through Publishify. Copyright issues are resolved as authors generate them directly.',
+                'process2-title': 'Step 2: AI Analysis and Structuring',
+                'process2-desc': 'Latest AI like Google Gemini analyzes papers to structure core content and convert it into AI-understandable format.',
+                'process3-title': 'Step 3: Unique URL Generation and Distribution',
+                'process3-desc': 'Unique web addresses are generated for each paper and automatically distributed to conference and publisher domains.',
+                'process4-title': 'Step 4: AI Search and Citation',
+                'process4-desc': 'AI systems worldwide can search and cite papers, maximizing academic paper influence.',
+                
+                // CTA Section
+                'cta-title': 'Lead the Future of Academic Publishing in the AI Era',
+                'cta-desc': 'Leading academic societies are already preparing for the AI search era with Publishify',
+                'cta-start-btn': 'Get Started Now',
+                'cta-guide-btn': 'View Guide',
+                
+                // Footer
+                'footer-about': 'About Institute',
+                'footer-privacy': 'Privacy Policy',
+                'footer-terms': 'Terms of Service',
+                'footer-contact': 'Contact',
+                'footer-org': 'Dankook University Remodeling Institute',
+                'footer-dev': 'Developer: Hur Seokjae',
+                'footer-email': 'Contact: mill@dankook.ac.kr',
+                'footer-copyright': '© 2025 Publishify. Dankook University Remodeling Institute. All rights reserved.',
+                
+                // Modal
+                'modal-title': 'Publishify User Guide'
+            },
+            zh: {
+                // Navigation
+                'current-lang': '中文',
+                'nav-home': '首页',
+                'nav-problem': '问题识别',
+                'nav-solution': '解决方案',
+                'nav-how-it-works': '工作原理',
+                'nav-contact': '联系我们',
+                
+                // Hero Section
+                'hero-title': 'AI搜索时代<br>学术出版新标准',
+                'hero-subtitle': '让AI理解并搜索学术论文的价值',
+                'hero-description': 'Publishify将PDF论文转换为AI可以完美理解和搜索的网络内容。在保持订阅期刊可访问性的同时，提出符合AI时代的新学术出版标准。',
+                'hero-try-btn': '立即使用',
+                'hero-learn-btn': '了解更多',
+                
+                // Problem Section
+                'problem-title': 'AI时代学术出版面临的挑战',
+                'problem-subtitle': 'OpenAI、Google、Anthropic等大型AI公司搜索和利用学术内容的时代已经到来',
+                'problem1-title': '订阅期刊的AI搜索限制',
+                'problem1-desc': '非开放获取的订阅期刊无法被AI理解和搜索，学术价值在AI生态系统中被边缘化。',
+                'problem2-title': 'PDF格式的AI利用局限',
+                'problem2-desc': 'AI难以完美理解PDF文档的结构和语境，学术论文的核心价值无法得到正确传达。',
+                'problem3-title': '版权保护与AI利用的两难',
+                'problem3-desc': '需要一个既能保护版权，又能让AI理解和引用学术内容的新标准。',
+                'problem4-title': '学术影响力的数字鸿沟',
+                'problem4-desc': '未针对AI搜索优化的论文面临在未来学术生态系统中失去影响力的风险。',
+                'problem5-title': '研究信息访问的时间延迟',
+                'problem5-desc': '论文发表后最新研究成果无法实时传达给AI和研究人员，创新速度放缓。',
+                'problem6-title': '多语言和非专业人士可访问性不足',
+                'problem6-desc': 'AI无法以多种语言和水平解释和总结论文，大大限制了全球研究人员和普通大众的知识可访问性。',
+                
+                // Solution Section
+                'solution-title': 'Publishify：AI时代的学术出版创新',
+                'solution-subtitle': '超越DOI的AI搜索标准 - 为所有学术论文提供AI可理解的独特网络地址',
+                'solution1-title': 'AI优化网络格式',
+                'solution1-desc': '将PDF转换为AI可以完美理解的结构化网络内容，最大化学术论文的可见性。',
+                'solution2-title': '版权保护解决方案',
+                'solution2-desc': '仅提供AI可理解的结构化摘要而非完整内容，在保护版权的同时实现AI搜索。',
+                'solution3-title': '独特的AI搜索URL',
+                'solution3-desc': '为每篇论文生成独特的网络地址，提出AI可以直接访问和引用的新学术出版标准。',
+                
+                // How It Works Section
+                'how-it-works-title': '简单强大的集成流程',
+                'how-it-works-subtitle': '与现有出版工作流程完美集成的解决方案',
+                'process1-title': '第1步：论文提交时自动生成',
+                'process1-desc': '作者提交论文时通过Publishify自动生成AI摘要。由作者直接生成，解决版权问题。',
+                'process2-title': '第2步：AI分析和结构化',
+                'process2-desc': 'Google Gemini等最新AI分析论文，结构化核心内容并转换为AI可理解的格式。',
+                'process3-title': '第3步：生成独特URL并分发',
+                'process3-desc': '为每篇论文生成独特的网络地址，并自动分发到学会和出版社域名。',
+                'process4-title': '第4步：AI搜索和引用',
+                'process4-desc': '全球AI系统可以搜索和引用论文，最大化学术论文的影响力。',
+                
+                // CTA Section
+                'cta-title': '引领AI时代学术出版的未来',
+                'cta-desc': '领先的学术团体已经在与Publishify一起为AI搜索时代做准备',
+                'cta-start-btn': '立即开始',
+                'cta-guide-btn': '查看指南',
+                
+                // Footer
+                'footer-about': '研究所介绍',
+                'footer-privacy': '隐私政策',
+                'footer-terms': '使用条款',
+                'footer-contact': '联系我们',
+                'footer-org': '檀国大学改造研究所',
+                'footer-dev': '开发者：许锡在',
+                'footer-email': '联系：mill@dankook.ac.kr',
+                'footer-copyright': '© 2025 Publishify. 檀国大学改造研究所. 版权所有.',
+                
+                // Modal
+                'modal-title': 'Publishify使用指南'
+            },
+            ja: {
+                // Navigation
+                'current-lang': '日本語',
+                'nav-home': 'ホーム',
+                'nav-problem': '問題認識',
+                'nav-solution': 'ソリューション',
+                'nav-how-it-works': '動作原理',
+                'nav-contact': 'お問い合わせ',
+                
+                // Hero Section
+                'hero-title': 'AI検索時代<br>学術出版の新標準',
+                'hero-subtitle': '学術論文の価値をAIが理解し検索できるように',
+                'hero-description': 'PublishifyはPDF論文をAIが完璧に理解し検索できるウェブコンテンツに変換します。購読ジャーナルのアクセス性を維持しながら、AI時代に適した新しい学術出版標準を提示します。',
+                'hero-try-btn': '今すぐ使用',
+                'hero-learn-btn': '詳しく知る',
+                
+                // Problem Section
+                'problem-title': 'AI時代、学術出版が直面する挑戦',
+                'problem-subtitle': 'OpenAI、Google、Anthropicなど大手AI企業が学術コンテンツを検索・活用する時代が到来しました',
+                'problem1-title': '購読ジャーナルのAI検索制限',
+                'problem1-desc': 'オープンアクセスでない購読ジャーナルはAIが内容を理解し検索できないため、学術的価値がAIエコシステムから疎外されています。',
+                'problem2-title': 'PDF形式のAI活用限界',
+                'problem2-desc': 'AIはPDF文書の構造と文脈を完璧に理解することが困難で、学術論文の核心価値が適切に伝達されません。',
+                'problem3-title': '著作権保護とAI活用のジレンマ',
+                'problem3-desc': '著作権を保護しながらもAIが学術コンテンツを理解し引用できる新しい標準が必要です。',
+                'problem4-title': '学術影響力のデジタル格差',
+                'problem4-desc': 'AI検索に最適化されていない論文は、今後の学術エコシステムで影響力を失うリスクに直面しています。',
+                'problem5-title': '研究情報アクセシビリティの時間遅延',
+                'problem5-desc': '論文出版後、最新研究結果がAIと研究者にリアルタイムで伝達されないため、イノベーションの速度が遅くなっています。',
+                'problem6-title': '多言語・非専門家アクセシビリティ不足',
+                'problem6-desc': 'AIが論文を様々な言語とレベルで解釈・要約できないため、グローバル研究者と一般大衆の知識アクセシビリティが大きく制限されています。',
+                
+                // Solution Section
+                'solution-title': 'Publishify、AI時代の学術出版革新',
+                'solution-subtitle': 'DOIを超えるAI検索標準 - すべての学術論文にAIが理解できる固有のウェブアドレスを付与',
+                'solution1-title': 'AI最適化ウェブフォーマット',
+                'solution1-desc': 'PDFをAIが完璧に理解できる構造化されたウェブコンテンツに変換し、学術論文の可視性を最大化します。',
+                'solution2-title': '著作権保護ソリューション',
+                'solution2-desc': '全体内容ではなくAIが理解できる構造化された要約のみを提供し、著作権を保護しながらAI検索を可能にします。',
+                'solution3-title': '固有のAI検索URL',
+                'solution3-desc': '各論文ごとに固有のウェブアドレスを生成し、AIが直接アクセスし引用できる新しい学術出版標準を提示します。',
+                
+                // How It Works Section
+                'how-it-works-title': 'シンプルで強力な統合プロセス',
+                'how-it-works-subtitle': '既存出版ワークフローに完璧に統合されるソリューション',
+                'process1-title': 'ステップ1：論文提出時自動生成',
+                'process1-desc': '著者が論文を提出する際、Publishifyを通じてAI要約を自動生成します。著者が直接生成するため著作権問題が解決されます。',
+                'process2-title': 'ステップ2：AI分析と構造化',
+                'process2-desc': 'Google Geminiなど最新AIが論文を分析し、核心内容を構造化してAIが理解できる形式に変換します。',
+                'process3-title': 'ステップ3：固有URL生成と配布',
+                'process3-desc': '各論文ごとに固有のウェブアドレスを生成し、学会および出版社ドメインに自動配布されます。',
+                'process4-title': 'ステップ4：AI検索と引用',
+                'process4-desc': '世界中のAIシステムが論文を検索し引用できるようになり、学術論文の影響力が最大化されます。',
+                
+                // CTA Section
+                'cta-title': 'AI時代、学術出版の未来をリードしませんか',
+                'cta-desc': '既に先導的な学会がPublishifyと共にAI検索時代を準備しています',
+                'cta-start-btn': '今すぐ始める',
+                'cta-guide-btn': '使用法を見る',
+                
+                // Footer
+                'footer-about': '研究所紹介',
+                'footer-privacy': 'プライバシーポリシー',
+                'footer-terms': '利用規約',
+                'footer-contact': 'お問い合わせ',
+                'footer-org': '檀国大学リモデリング研究所',
+                'footer-dev': '開発：許錫在',
+                'footer-email': 'お問い合わせ：mill@dankook.ac.kr',
+                'footer-copyright': '© 2025 Publishify. 檀国大学リモデリング研究所. All rights reserved.',
+                
+                // Modal
+                'modal-title': 'Publishify使用ガイド'
+            }
+        };
+
+        // 현재 언어
+        let currentLanguage = 'ko';
+
+        // 언어 정보 매핑
+        const languageInfo = {
+            ko: { flag: '🇰🇷', name: '한국어' },
+            en: { flag: '🇺🇸', name: 'English' },
+            zh: { flag: '🇨🇳', name: '中文' },
+            ja: { flag: '🇯🇵', name: '日本語' }
+        };
+
+        // 언어 드롭다운 토글
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 언어 변경 함수
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            updatePageContent();
+            updateLanguageButton();
+            toggleLanguageDropdown();
+            
+            // 로컬 스토리지에 저장
+            localStorage.setItem('preferred-language', lang);
+        }
+
+        // 페이지 콘텐츠 업데이트
+        function updatePageContent() {
+            const elements = document.querySelectorAll('[data-key]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    element.innerHTML = translations[currentLanguage][key];
+                }
+            });
+        }
+
+        // 언어 버튼 업데이트
+        function updateLanguageButton() {
+            const button = document.querySelector('.language-button');
+            const flagSpan = button.querySelector('.flag-icon');
+            const textSpan = button.querySelector('[data-key="current-lang"]');
+            
+            flagSpan.textContent = languageInfo[currentLanguage].flag;
+            textSpan.textContent = languageInfo[currentLanguage].name;
+        }
+
+        // 드롭다운 외부 클릭 시 닫기
+        document.addEventListener('click', function(event) {
+            const languageSelector = document.querySelector('.language-selector');
+            const dropdown = document.getElementById('languageDropdown');
+            
+            if (!languageSelector.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 페이지 로드 시 저장된 언어 설정 복원
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedLanguage = localStorage.getItem('preferred-language');
+            if (savedLanguage && translations[savedLanguage]) {
+                currentLanguage = savedLanguage;
+                updatePageContent();
+                updateLanguageButton();
+            }
+        });
     </script>
 </body>
 </html>
